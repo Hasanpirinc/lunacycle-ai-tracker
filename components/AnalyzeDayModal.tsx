@@ -1,15 +1,15 @@
 // Fix: Implement the full content for AnalyzeDayModal.tsx.
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { AppContext } from '../App';
-import { Card } from './common/Card';
-import { Button } from './common/Button';
-import { Spinner } from './common/Spinner';
-import { useTranslation } from '../hooks/useTranslation';
-import { analyzeDay, analyzePregnancyDay, generateSpeech } from '../services/geminiService';
-import type { CycleInfo, PregnancyInfo } from '../types';
-import { useAudio } from '../hooks/useAudio';
-import { VolumeUpIcon, VolumeOffIcon } from './icons';
+import { AppContext } from '../App.tsx';
+import { Card } from './common/Card.tsx';
+import { Button } from './common/Button.tsx';
+import { Spinner } from './common/Spinner.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
+import { analyzeDay, analyzePregnancyDay, generateSpeech } from '../services/geminiService.ts';
+import type { CycleInfo, PregnancyInfo } from '../types.ts';
+import { useAudio } from '../hooks/useAudio.ts';
+import { VolumeUpIcon, VolumeOffIcon } from './icons.tsx';
 
 interface AnalyzeDayModalProps {
     mode: 'cycle' | 'pregnancy';

@@ -1,27 +1,27 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import type { UserData, Cycle, PregnancyJourney } from './types';
-import { ThemeProvider } from './contexts/ThemeContext';
+import type { UserData, Cycle, PregnancyJourney } from './types.ts';
+import { ThemeProvider } from './contexts/ThemeContext.tsx';
 // Fix: The useTranslation hook is in its own file, not in the context file.
-import { LocalizationProvider } from './contexts/LocalizationContext';
-import { useTranslation } from './hooks/useTranslation';
-import { AudioProvider } from './contexts/AudioContext';
-import { useDebounce } from './hooks/useDebounce';
-import { LoginScreen } from './components/LoginScreen';
-import { ProfileSetupScreen } from './components/ProfileSetupScreen';
-import { PinEntryScreen } from './components/PinEntryScreen';
-import { CycleTracker } from './components/CycleTracker';
-import { PregnancyTracker } from './components/PregnancyTracker';
-import { Header } from './components/Header';
-import { SettingsScreen } from './components/SettingsScreen';
-import { MyPregnanciesScreen } from './components/MyPregnanciesScreen';
-import { ReminderManager } from './components/ReminderManager';
-import { ChatbotWidget } from './components/ChatbotWidget';
-import { PregnancyCelebration } from './components/PregnancyCelebration';
-import * as cryptoService from './services/cryptoService';
-import * as googleDriveService from './services/googleDriveService';
-import { addDays } from './utils/helpers';
+import { LocalizationProvider } from './contexts/LocalizationContext.tsx';
+import { useTranslation } from './hooks/useTranslation.ts';
+import { AudioProvider } from './contexts/AudioContext.tsx';
+import { useDebounce } from './hooks/useDebounce.ts';
+import { LoginScreen } from './components/LoginScreen.tsx';
+import { ProfileSetupScreen } from './components/ProfileSetupScreen.tsx';
+import { PinEntryScreen } from './components/PinEntryScreen.tsx';
+import { CycleTracker } from './components/CycleTracker.tsx';
+import { PregnancyTracker } from './components/PregnancyTracker.tsx';
+import { Header } from './components/Header.tsx';
+import { SettingsScreen } from './components/SettingsScreen.tsx';
+import { MyPregnanciesScreen } from './components/MyPregnanciesScreen.tsx';
+import { ReminderManager } from './components/ReminderManager.tsx';
+import { ChatbotWidget } from './components/ChatbotWidget.tsx';
+import { PregnancyCelebration } from './components/PregnancyCelebration.tsx';
+import * as cryptoService from './services/cryptoService.ts';
+import * as googleDriveService from './services/googleDriveService.ts';
+import { addDays } from './utils/helpers.ts';
 // Fix: Import the LanguageSelectionScreen component to resolve the "Cannot find name" error.
-import { LanguageSelectionScreen } from './components/LanguageSelectionScreen';
+import { LanguageSelectionScreen } from './components/LanguageSelectionScreen.tsx';
 
 type AppState = 'initializing' | 'language_selection' | 'login' | 'pin_setup' | 'pin_entry' | 'profile_setup' | 'ready' | 'celebration';
 export type SyncState = 'idle' | 'syncing' | 'synced' | 'error';

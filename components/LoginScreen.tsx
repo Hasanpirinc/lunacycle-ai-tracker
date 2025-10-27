@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useTranslation } from '../hooks/useTranslation';
-import { Spinner } from './common/Spinner';
+import { useTranslation } from '../hooks/useTranslation.ts';
+import { Spinner } from './common/Spinner.tsx';
 
 // This is a placeholder for a real Google Sign-In library integration
 // In a real app, this would use a library like '@react-oauth/google'

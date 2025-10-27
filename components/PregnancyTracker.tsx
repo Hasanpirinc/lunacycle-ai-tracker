@@ -1,21 +1,21 @@
 // Fix: Implement the full content for PregnancyTracker.tsx to resolve module errors.
 import React, { useState, useContext } from 'react';
-import { usePregnancyData } from '../hooks/usePregnancyData';
-import { Card } from './common/Card';
-import { Spinner } from './common/Spinner';
-import { Button } from './common/Button';
-import { AppContext } from '../App';
-import { useTranslation } from '../hooks/useTranslation';
-import { generateBabySizeImage } from '../services/geminiService';
-import { AnalyzeDayModal } from './AnalyzeDayModal';
-import { PregnancySymptomLogger } from './PregnancySymptomLogger';
-import { ResourceCenter } from './ResourceCenter';
-import { SetDueDateModal } from './SetDueDateModal';
-import { PregnancyTipsHistory } from './PregnancyTipsHistory';
-import { DailyTip } from './DailyTip';
-import { RewardedAdModal } from './RewardedAdModal';
-import { BannerAd } from './common/BannerAd';
-import { ExitPregnancyModeModal } from './ExitPregnancyModeModal';
+import { usePregnancyData } from '../hooks/usePregnancyData.ts';
+import { Card } from './common/Card.tsx';
+import { Spinner } from './common/Spinner.tsx';
+import { Button } from './common/Button.tsx';
+import { AppContext } from '../App.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
+import { generateBabySizeImage } from '../services/geminiService.ts';
+import { AnalyzeDayModal } from './AnalyzeDayModal.tsx';
+import { PregnancySymptomLogger } from './PregnancySymptomLogger.tsx';
+import { ResourceCenter } from './ResourceCenter.tsx';
+import { SetDueDateModal } from './SetDueDateModal.tsx';
+import { PregnancyTipsHistory } from './PregnancyTipsHistory.tsx';
+import { DailyTip } from './DailyTip.tsx';
+import { RewardedAdModal } from './RewardedAdModal.tsx';
+import { BannerAd } from './common/BannerAd.tsx';
+import { ExitPregnancyModeModal } from './ExitPregnancyModeModal.tsx';
 
 const BabySizeVisual: React.FC<{ babySizeKey: string; babyLength: number; babyWeight: number; week: number; }> = ({ babySizeKey, babyLength, babyWeight, week }) => {
     const { t, language } = useTranslation();

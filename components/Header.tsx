@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { AppContext } from '../App';
-import { useTranslation } from '../hooks/useTranslation';
-import { CogIcon, DocumentTextIcon, UserIcon, ArrowRightOnRectangleIcon } from './icons';
+import { AppContext } from '../App.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
+import { CogIcon, DocumentTextIcon, UserIcon, ArrowRightOnRectangleIcon } from './icons.tsx';
 
 export const Header: React.FC = () => {
   const { setCurrentView, userData, logout } = useContext(AppContext);

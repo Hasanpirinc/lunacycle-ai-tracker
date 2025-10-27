@@ -1,20 +1,20 @@
 import React, { useContext, useState } from 'react';
-import { DailyCheckIn } from './DailyCheckIn';
-import { SymptomLogger } from './SymptomLogger';
-import { CalendarView } from './CalendarView';
-import { PregnancyModeSwitch } from './PregnancyModeSwitch';
-import { CycleInsights } from './CycleInsights';
-import { ResourceCenter } from './ResourceCenter';
-import { useCycleData } from '../hooks/useCycleData';
-import { AppContext } from '../App';
-import { DailyTip } from './DailyTip';
-import { AnalyzeDayModal } from './AnalyzeDayModal';
-import { Card } from './common/Card';
-import { Button } from './common/Button';
-import { useTranslation } from '../hooks/useTranslation';
-import { CycleTipsHistory } from './CycleTipsHistory';
-import { RewardedAdModal } from './RewardedAdModal';
-import { BannerAd } from './common/BannerAd';
+import { DailyCheckIn } from './DailyCheckIn.tsx';
+import { SymptomLogger } from './SymptomLogger.tsx';
+import { CalendarView } from './CalendarView.tsx';
+import { PregnancyModeSwitch } from './PregnancyModeSwitch.tsx';
+import { CycleInsights } from './CycleInsights.tsx';
+import { ResourceCenter } from './ResourceCenter.tsx';
+import { useCycleData } from '../hooks/useCycleData.ts';
+import { AppContext } from '../App.tsx';
+import { DailyTip } from './DailyTip.tsx';
+import { AnalyzeDayModal } from './AnalyzeDayModal.tsx';
+import { Card } from './common/Card.tsx';
+import { Button } from './common/Button.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
+import { CycleTipsHistory } from './CycleTipsHistory.tsx';
+import { RewardedAdModal } from './RewardedAdModal.tsx';
+import { BannerAd } from './common/BannerAd.tsx';
 
 export const CycleTracker: React.FC = () => {
     const cycleInfo = useCycleData();

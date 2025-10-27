@@ -3,15 +3,15 @@
 
 
 import React, { useMemo, useState } from 'react';
-import { useCycleData } from '../hooks/useCycleData';
-import { Card } from './common/Card';
-import { useTranslation } from '../hooks/useTranslation';
-import { Spinner } from './common/Spinner';
-import { predictCycleLength, addDays, differenceInDays } from '../utils/helpers';
-import type { UserData, Cycle } from '../types';
-import { ChevronLeftIcon, ChevronRightIcon, PencilIcon } from './icons';
-import { EditCycleModal } from './EditCycleModal';
-import { Button } from './common/Button';
+import { useCycleData } from '../hooks/useCycleData.ts';
+import { Card } from './common/Card.tsx';
+import { useTranslation } from '../hooks/useTranslation.ts';
+import { Spinner } from './common/Spinner.tsx';
+import { predictCycleLength, addDays, differenceInDays } from '../utils/helpers.ts';
+import type { UserData, Cycle } from '../types.ts';
+import { ChevronLeftIcon, ChevronRightIcon, PencilIcon } from './icons.tsx';
+import { EditCycleModal } from './EditCycleModal.tsx';
+import { Button } from './common/Button.tsx';
 
 interface DayInfo {
     isPeriod: boolean;
