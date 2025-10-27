@@ -1,6 +1,13 @@
+// services/googleDriveService.js
+/* global gapi, google */
+
 let tokenClient = null;
 const FOLDER_NAME = 'LunaCycleData';
 
+/**
+ * Initializes the Google API client and the Google Identity Services token client.
+ * This must be called with a valid Google Client ID before any other functions.
+ */
 export const initClient = (clientId) => {
     return new Promise((resolve, reject) => {
         gapi.load('client', async () => {
@@ -12,7 +19,7 @@ export const initClient = (clientId) => {
                 tokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: clientId,
                     scope: 'https://www.googleapis.com/auth/drive.file',
-                    callback: () => {},
+                    callback: () => {}, // Callback is handled by the promise in signIn
                 });
                 resolve();
             } catch (error) {
@@ -22,6 +29,10 @@ export const initClient = (clientId) => {
     });
 };
 
+/**
+ * Signs the user in and obtains an access token for the Drive API.
+ * This will trigger the Google OAuth consent screen popup.
+ */
 export const signIn = () => {
     return new Promise((resolve, reject) => {
         if (!tokenClient) {
@@ -42,6 +53,9 @@ export const signIn = () => {
     });
 };
 
+/**
+ * Signs the user out by revoking the current access token.
+ */
 export const signOut = () => {
     const token = gapi.client.getToken();
     if (token !== null) {
@@ -51,6 +65,9 @@ export const signOut = () => {
     }
 };
 
+/**
+ * Finds or creates a dedicated folder for the application in the user's Google Drive.
+ */
 export const findOrCreateFolder = async () => {
     try {
         const response = await gapi.client.drive.files.list({
@@ -77,6 +94,10 @@ export const findOrCreateFolder = async () => {
     }
 };
 
+
+/**
+ * Saves the encrypted data string to a new timestamped file in Google Drive.
+ */
 export const saveData = async (folderId, data) => {
     const fileName = `backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json.encrypted`;
     const metadata = {
@@ -112,6 +133,9 @@ export const saveData = async (folderId, data) => {
     return response.result;
 };
 
+/**
+ * Lists all backup files in the app folder.
+ */
 export const listBackups = async (folderId) => {
     const response = await gapi.client.drive.files.list({
         q: `'${folderId}' in parents and trashed=false and mimeType='application/json'`,
@@ -122,6 +146,10 @@ export const listBackups = async (folderId) => {
     return response.result.files || [];
 };
 
+
+/**
+ * Loads the encrypted data string from the specified file in Google Drive.
+ */
 export const loadData = async (fileId) => {
     try {
         const response = await gapi.client.drive.files.get({

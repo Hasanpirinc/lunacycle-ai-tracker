@@ -1,12 +1,18 @@
+// Fix: Create the full implementation for the geminiService.
 import { GoogleGenAI, Modality, Type } from "@google/genai";
 import * as cache from '../utils/cache.js';
 
 const CACHE_PREFIX = 'api_cache_';
 
+// Creates a new client instance for each API call to ensure the latest API key is used.
 const getClient = () => {
+    // The API key is assumed to be populated into process.env by the aistudio helper functions.
     return new GoogleGenAI({apiKey: process.env.API_KEY});
 }
 
+/**
+ * Fetches a personalized daily tip for a specific week of pregnancy.
+ */
 export const getDailyPregnancyTip = async (week, language) => {
     const cacheKey = `${CACHE_PREFIX}daily_pregnancy_tip_w${week}_${language}`;
     const cachedTip = cache.get(cacheKey);
@@ -32,6 +38,9 @@ export const getDailyPregnancyTip = async (week, language) => {
     }
 };
 
+/**
+ * Fetches a personalized daily tip based on the user's cycle phase.
+ */
 export const getDailyCycleTip = async (cycleInfo, language) => {
     const cacheKey = `${CACHE_PREFIX}daily_cycle_tip_d${cycleInfo.currentDay}_${language}`;
     const cachedTip = cache.get(cacheKey);
@@ -58,6 +67,9 @@ export const getDailyCycleTip = async (cycleInfo, language) => {
     }
 };
 
+/**
+ * Generates a cute, minimalist image representing the baby's size.
+ */
 export const generateBabySizeImage = async (objectName, language) => {
     const cacheKey = `${CACHE_PREFIX}baby_image_${objectName.replace(/\s+/g, '_')}_${language}`;
     const cachedImage = cache.get(cacheKey);
@@ -92,7 +104,21 @@ export const generateBabySizeImage = async (objectName, language) => {
     }
 };
 
-export const analyzeDay = async (userData, cycleInfo, symptoms, coords, language) => {
+
+/**
+ * Analyzes the user's day based on cycle info, symptoms, and location.
+ */
+export const analyzeDay = async (
+    userData, 
+    cycleInfo, 
+    symptoms, 
+    coords, 
+    language
+) => {
+    const cacheKey = `${CACHE_PREFIX}analysis_cycle_${language}`;
+    const cachedAnalysis = cache.get(cacheKey);
+    if (cachedAnalysis) return cachedAnalysis;
+
     try {
         const ai = getClient();
         const { currentPhase, isFertile, isPeriod } = cycleInfo;
@@ -137,17 +163,34 @@ export const analyzeDay = async (userData, cycleInfo, symptoms, coords, language
                 title: chunk.maps.title
             }));
 
-        return {
+        const result = {
             analysis: response.text,
             sources: sources
         };
+
+        cache.set(cacheKey, result);
+        return result;
+
     } catch (error) {
         console.error("Error analyzing day:", error);
         throw new Error("Failed to generate daily analysis. Please check your connection and try again.");
     }
 };
 
-export const analyzePregnancyDay = async (userData, pregnancyInfo, symptoms, coords, language) => {
+/**
+ * Analyzes the user's day based on pregnancy info, symptoms, and location.
+ */
+export const analyzePregnancyDay = async (
+    userData, 
+    pregnancyInfo, 
+    symptoms, 
+    coords, 
+    language
+) => {
+    const cacheKey = `${CACHE_PREFIX}analysis_pregnancy_${language}`;
+    const cachedAnalysis = cache.get(cacheKey);
+    if (cachedAnalysis) return cachedAnalysis;
+
     try {
         const ai = getClient();
         const { currentWeek, trimester } = pregnancyInfo;
@@ -191,17 +234,23 @@ export const analyzePregnancyDay = async (userData, pregnancyInfo, symptoms, coo
                 title: chunk.maps.title
             }));
 
-        return {
+        const result = {
             analysis: response.text,
             sources: sources
         };
+        cache.set(cacheKey, result);
+        return result;
     } catch (error) {
         console.error("Error analyzing pregnancy day:", error);
         throw new Error("Failed to generate daily analysis for pregnancy. Please check your connection and try again.");
     }
 };
 
+/**
+ * Converts a string of text into speech audio data.
+ */
 export const generateSpeech = async (text) => {
+    // Speech is not cached as it's a direct user action and should be responsive.
     try {
         const ai = getClient();
         if (!text) return null;
@@ -228,6 +277,9 @@ export const generateSpeech = async (text) => {
     }
 };
 
+/**
+ * Generates personalized resource topics based on cycle phase and symptoms.
+ */
 export const getPersonalizedResourceTopics = async (phase, symptoms, language) => {
     const cacheKey = `${CACHE_PREFIX}topics_cycle_${phase}_${language}`;
     const cachedTopics = cache.get(cacheKey);
@@ -273,10 +325,14 @@ export const getPersonalizedResourceTopics = async (phase, symptoms, language) =
         return topics;
     } catch (error) {
         console.error("Error fetching resource topics:", error);
+        // Fallback topics
         return ["Understanding Your Cycle", "Nutrition for Hormonal Health", "Exercise and Your Period"];
     }
 };
 
+/**
+ * Generates personalized resource topics based on pregnancy stage and symptoms.
+ */
 export const getPersonalizedPregnancyResourceTopics = async (pregnancyInfo, symptoms, language) => {
     const cacheKey = `${CACHE_PREFIX}topics_pregnancy_w${pregnancyInfo.currentWeek}_${language}`;
     const cachedTopics = cache.get(cacheKey);
@@ -324,10 +380,15 @@ export const getPersonalizedPregnancyResourceTopics = async (pregnancyInfo, symp
         return topics;
     } catch (error) {
         console.error("Error fetching pregnancy resource topics:", error);
+        // Fallback topics
         return ["What to Expect in Your Trimester", "Healthy Pregnancy Diet", "Preparing for Your Baby's Arrival"];
     }
 };
 
+
+/**
+ * Generates exercise recommendations based on cycle phase and symptoms.
+ */
 export const getExerciseRecommendations = async (phase, symptoms, language) => {
     const cacheKey = `${CACHE_PREFIX}exercises_cycle_${phase}_${language}`;
     const cachedExercises = cache.get(cacheKey);
@@ -387,6 +448,9 @@ export const getExerciseRecommendations = async (phase, symptoms, language) => {
     }
 };
 
+/**
+ * Generates exercise recommendations based on pregnancy stage and symptoms.
+ */
 export const getPregnancyExerciseRecommendations = async (pregnancyInfo, symptoms, language) => {
     const cacheKey = `${CACHE_PREFIX}exercises_pregnancy_w${pregnancyInfo.currentWeek}_${language}`;
     const cachedExercises = cache.get(cacheKey);
@@ -448,6 +512,9 @@ export const getPregnancyExerciseRecommendations = async (pregnancyInfo, symptom
     }
 };
 
+/**
+ * Fetches the content for a specific resource topic.
+ */
 export const getResourceContent = async (topic, language) => {
     const cacheKey = `${CACHE_PREFIX}resource_${topic.replace(/\s+/g, '_')}_${language}`;
     const cachedContent = cache.get(cacheKey);
@@ -476,7 +543,16 @@ export const getResourceContent = async (topic, language) => {
     }
 };
 
-export const getChatbotResponse = async (question, userData, context, language) => {
+
+/**
+ * Gets a personalized response from the Luna chatbot.
+ */
+export const getChatbotResponse = async (
+    question,
+    userData,
+    context,
+    language
+) => {
     const ai = getClient();
     let contextString = `The user's name is ${userData.name}. `;
     if (userData.isPregnant && context.pregnancyInfo) {

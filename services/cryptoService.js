@@ -1,6 +1,9 @@
+
+// In a real app, this should be unique per user and stored. For this demo, it's a constant.
 const SALT = 'luna-cycle-salt-2024'; 
 const ITERATIONS = 100000;
 
+// Helper to convert string to ArrayBuffer
 function str2ab(str) {
     const buf = new ArrayBuffer(str.length);
     const bufView = new Uint8Array(buf);
@@ -10,10 +13,12 @@ function str2ab(str) {
     return buf;
 }
 
+// Helper to convert ArrayBuffer to string
 function ab2str(buf) {
     return String.fromCharCode.apply(null, Array.from(new Uint8Array(buf)));
 }
 
+// Derives a key from a PIN using PBKDF2
 async function getKey(pin) {
     const keyMaterial = await window.crypto.subtle.importKey(
         'raw',
@@ -36,10 +41,16 @@ async function getKey(pin) {
     );
 }
 
+/**
+ * Encrypts data using a PIN.
+ * @param {string} pin The user's PIN.
+ * @param {object} data The data object to encrypt.
+ * @returns {Promise<string>} A base64 encoded string of the encrypted data.
+ */
 export async function encryptData(pin, data) {
     try {
         const key = await getKey(pin);
-        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const iv = window.crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV
         const dataStr = JSON.stringify(data);
         const encodedData = str2ab(dataStr);
 
@@ -63,6 +74,12 @@ export async function encryptData(pin, data) {
     }
 }
 
+/**
+ * Decrypts data using a PIN.
+ * @param {string} pin The user's PIN.
+ * @param {string} encryptedBase64 The base64 encoded encrypted data.
+ * @returns {Promise<any>} The decrypted data object.
+ */
 export async function decryptData(pin, encryptedBase64) {
     try {
         const key = await getKey(pin);

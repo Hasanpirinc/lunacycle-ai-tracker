@@ -1,26 +1,18 @@
 import React, { createContext, useState, useEffect } from 'react';
 
-type Theme = 'light' | 'dark';
+export const ThemeContext = createContext(null);
 
-interface ThemeContextType {
-    theme: Theme;
-    setTheme: (theme: Theme) => void;
-}
-
-export const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);
-
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [theme, setTheme] = useState<Theme>(() => {
+export const ThemeProvider = ({ children }) => {
+    const [theme, setTheme] = useState(() => {
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme) {
-            return storedTheme as Theme;
+            return storedTheme;
         }
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     });
 
     useEffect(() => {
         const root = window.document.documentElement;
-        // More robust way to switch themes: remove both, then add the correct one.
         root.classList.remove('light', 'dark');
         root.classList.add(theme);
         localStorage.setItem('theme', theme);

@@ -1,5 +1,10 @@
+// utils/cache.js
+
 const getToday = () => new Date().toISOString().split('T')[0];
 
+/**
+ * Sets a value in localStorage with today's timestamp.
+ */
 export const set = (key, data) => {
     const today = getToday();
     const item = { timestamp: today, data };
@@ -10,6 +15,10 @@ export const set = (key, data) => {
     }
 };
 
+/**
+ * Gets a value from localStorage if it was stored today.
+ * If the item is stale or doesn't exist, it returns null.
+ */
 export const get = (key) => {
     try {
         const itemStr = localStorage.getItem(key);
@@ -23,6 +32,7 @@ export const get = (key) => {
         if (item.timestamp === today) {
             return item.data;
         } else {
+            // Item is stale, remove it
             localStorage.removeItem(key);
             return null;
         }
@@ -32,6 +42,10 @@ export const get = (key) => {
     }
 };
 
+/**
+ * Removes all items from localStorage that start with a given prefix.
+ * Used to invalidate related caches at once.
+ */
 export const invalidate = (prefix) => {
      try {
         Object.keys(localStorage).forEach(key => {

@@ -22,6 +22,7 @@ export const predictCycleLength = (completedCycles, defaultLength) => {
     return Math.round(sum / recentCycles.length);
 };
 
+
 export const formatDateForInput = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -56,6 +57,7 @@ export const getZodiacSign = (dob) => {
     if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "Capricorn";
     return "Unknown";
 };
+
 
 export const calculatePregnancyMetrics = (lastPeriod, today, lang, dueDate) => {
     const finalDueDate = dueDate || addDays(lastPeriod, 280);
@@ -93,7 +95,7 @@ export const calculatePregnancyMetrics = (lastPeriod, today, lang, dueDate) => {
 export const analyzeSymptomTrends = (cycles, symptoms, lastN) => {
     if (cycles.length < 2) return [];
 
-    const recentCycles = cycles.slice(-lastN -1, -1);
+    const recentCycles = cycles.slice(-lastN -1, -1); // Analyze last N completed cycles
     if (recentCycles.length === 0) return [];
     
     const trendCounts = {};

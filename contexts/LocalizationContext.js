@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 
-// Helper to get nested values from an object using a dot-notation string
-const get = (obj: any, path: string, defaultValue: any = undefined) => {
+const get = (obj, path, defaultValue = undefined) => {
     const result = path.split('.').reduce((acc, part) => acc && acc[part], obj);
     return result === undefined ? defaultValue : result;
 };
@@ -29,30 +28,22 @@ const availableLanguages = [
     { code: 'uk', name: 'Українська (Ukrainian)' },
 ];
 
+export const LocalizationContext = createContext(null);
 
-export interface LocalizationContextType {
-  language: string;
-  setLanguage: (lang: string) => void;
-  t: (key: string, options?: { [key: string]: any }) => any;
-  availableLanguages: typeof availableLanguages;
-}
-
-export const LocalizationContext = createContext<LocalizationContextType>({} as LocalizationContextType);
-
-export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LocalizationProvider = ({ children }) => {
     const [language, setLanguageState] = useState(() => {
         const savedLang = localStorage.getItem('language');
-        return availableLanguages.some(l => l.code === savedLang) ? savedLang! : 'en';
+        return availableLanguages.some(l => l.code === savedLang) ? savedLang : 'en';
     });
     
-    const [translations, setTranslations] = useState<Record<string, any>>({});
+    const [translations, setTranslations] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const loadTranslations = async () => {
             setIsLoading(true);
             try {
-                const loadedTranslations: Record<string, any> = {};
+                const loadedTranslations = {};
 
                 await Promise.all(availableLanguages.map(async (lang) => {
                     try {
@@ -68,7 +59,6 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                     }
                 }));
 
-                // Ensure English is always loaded as a fallback
                 if (!loadedTranslations['en']) {
                      throw new Error('Failed to load base English translation file.');
                 }
@@ -77,7 +67,7 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
             } catch (error) {
                 console.error("Could not load translation files:", error);
-                setTranslations({}); // Avoid crashing the app
+                setTranslations({});
             } finally {
                 setIsLoading(false);
             }
@@ -90,13 +80,13 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         localStorage.setItem('language', language);
     }, [language]);
 
-    const setLanguage = (lang: string) => {
+    const setLanguage = (lang) => {
         if (availableLanguages.some(l => l.code === lang)) {
             setLanguageState(lang);
         }
     };
 
-    const t = useCallback((key: string, options?: { [key: string]: any }): any => {
+    const t = useCallback((key, options) => {
         if (isLoading) {
             return key.split('.').pop() || key;
         }
@@ -112,18 +102,15 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             return key.split('.').pop() || key;
         }
 
-        // If the special option is passed and we found an object, return it directly.
         if (options?.returnObjects && typeof translationValue === 'object' && translationValue !== null) {
             return translationValue;
         }
 
-        // If the value is not a string, we can't do replacements.
         if (typeof translationValue !== 'string') {
             console.warn(`Translation for key '${key}' is an object but 'returnObjects' was not specified. Returning key.`);
             return key.split('.').pop() || key;
         }
 
-        // Now we know translationValue is a string. Proceed with replacements.
         let text = translationValue;
         
         if (options) {

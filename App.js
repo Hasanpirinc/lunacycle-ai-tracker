@@ -21,19 +21,18 @@ import { addDays } from './utils/helpers.js';
 import { LanguageSelectionScreen } from './components/LanguageSelectionScreen.js';
 import { ApiKeySetupScreen } from './components/ApiKeySetupScreen.js';
 
-const App: React.FC = () => {
-    return (
-        <LocalizationProvider>
-            <ThemeProvider>
-                <AudioProvider>
-                    <AppContent />
-                </AudioProvider>
-            </ThemeProvider>
-        </LocalizationProvider>
-    );
+export const AppContext = React.createContext(null);
+
+const dateReviver = (key, value) => {
+    const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+    if (typeof value === 'string' && isoDateRegex.test(value)) {
+        return new Date(value);
+    }
+    return value;
 };
 
-const AppContent: React.FC = () => {
+
+const AppContent = () => {
     const [appState, setAppState] = useState('initializing');
     const [userData, setUserDataState] = useState(null);
     const [pin, setPin] = useState(null);
@@ -62,7 +61,7 @@ const AppContent: React.FC = () => {
 
     useEffect(() => {
         const initialize = async () => {
-            const clientId = undefined; 
+            const clientId = process.env.GOOGLE_CLIENT_ID;
 
             if (clientId) {
                 try {
@@ -90,14 +89,6 @@ const AppContent: React.FC = () => {
         };
         initialize();
     }, [proceedToNextStep]);
-
-    const dateReviver = (key, value) => {
-        const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
-        if (typeof value === 'string' && isoDateRegex.test(value)) {
-            return new Date(value);
-        }
-        return value;
-    };
 
     const handlePinEntry = async (enteredPin) => {
         try {
@@ -266,6 +257,8 @@ const AppContent: React.FC = () => {
                         localStorage.setItem('user_pin_set', 'true');
                         setAppState('profile_setup');
                     }}
+                    onPinConfirm={() => {}}
+                    onPinEnter={() => {}}
                 />;
             
             case 'pin_entry':
@@ -331,7 +324,7 @@ const AppContent: React.FC = () => {
         backupToDrive,
         listBackupsFromDrive,
         restoreFromDrive,
-    }), [userData, currentView, language, setLanguage, isDriveReady, isDriveAuthenticated, connectToDrive, disconnectFromDrive]);
+    }), [userData, currentView, language, setLanguage, isDriveReady, isDriveAuthenticated, connectToDrive, disconnectFromDrive, backupToDrive, listBackupsFromDrive, restoreFromDrive]);
 
     return (
         <AppContext.Provider value={contextValue}>
@@ -340,6 +333,17 @@ const AppContent: React.FC = () => {
     );
 }
 
-export const AppContext = React.createContext(null);
+
+const App = () => {
+    return (
+        <LocalizationProvider>
+            <ThemeProvider>
+                <AudioProvider>
+                    <AppContent />
+                </AudioProvider>
+            </ThemeProvider>
+        </LocalizationProvider>
+    );
+};
 
 export default App;

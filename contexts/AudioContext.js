@@ -1,21 +1,14 @@
 import React, { createContext, useRef, useCallback } from 'react';
 
-export type SoundType = 'log' | 'confirm' | 'switch' | 'cancel';
+export const AudioContext = createContext(null);
 
-interface AudioContextType {
-    playSound: (sound: SoundType) => void;
-}
+export const AudioProvider = ({ children }) => {
+    const audioContextRef = useRef(null);
 
-export const AudioContext = createContext<AudioContextType>({} as AudioContextType);
-
-export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const audioContextRef = useRef<AudioContext | null>(null);
-
-    const playSound = useCallback((sound: SoundType) => {
-        // Initialize AudioContext on the first user interaction
+    const playSound = useCallback((sound) => {
         if (!audioContextRef.current) {
             try {
-                audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {
                 console.error("Web Audio API is not supported in this browser.");
                 return;
@@ -24,7 +17,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         
         const ctx = audioContextRef.current;
         
-        // Browsers may require user interaction to start the AudioContext.
         if (ctx.state === 'suspended') {
             ctx.resume();
         }
@@ -35,7 +27,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         gainNode.connect(ctx.destination);
         
         const now = ctx.currentTime;
-        gainNode.gain.setValueAtTime(0.2, now); // Start with a volume
+        gainNode.gain.setValueAtTime(0.2, now);
         oscillator.type = 'sine';
 
         switch (sound) {
