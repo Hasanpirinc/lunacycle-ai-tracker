@@ -1,0 +1,7 @@
+{
+  "name": "LunaCycle AI Tracker",
+  "description": "An intelligent menstrual and pregnancy tracker that provides personalized daily insights. Track your cycle, log symptoms, and get AI-powered analysis of your day. Switch to pregnancy mode for daily health tips for you and your baby.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
