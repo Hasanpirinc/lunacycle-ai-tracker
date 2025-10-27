@@ -22,8 +22,9 @@ import * as googleDriveService from './services/googleDriveService.ts';
 import { addDays } from './utils/helpers.ts';
 // Fix: Import the LanguageSelectionScreen component to resolve the "Cannot find name" error.
 import { LanguageSelectionScreen } from './components/LanguageSelectionScreen.tsx';
+import { ApiKeySetupScreen } from './components/ApiKeySetupScreen.tsx';
 
-type AppState = 'initializing' | 'language_selection' | 'login' | 'pin_setup' | 'pin_entry' | 'profile_setup' | 'ready' | 'celebration';
+type AppState = 'initializing' | 'api_key_setup' | 'language_selection' | 'login' | 'pin_setup' | 'pin_entry' | 'profile_setup' | 'ready' | 'celebration';
 export type SyncState = 'idle' | 'syncing' | 'synced' | 'error';
 type AppView = 'cycle_tracker' | 'pregnancy_tracker' | 'settings' | 'my_pregnancies';
 
@@ -72,6 +73,21 @@ const AppContent: React.FC = () => {
     const [isDriveAuthenticated, setDriveAuthenticated] = useState(false);
     const [driveFolderId, setDriveFolderId] = useState<string | null>(null);
 
+    const proceedToNextStep = useCallback(() => {
+        const hasSeenLangScreen = localStorage.getItem('hasSeenLangScreen');
+        if (!hasSeenLangScreen) {
+            setAppState('language_selection');
+            return;
+        }
+
+        const storedPin = localStorage.getItem('user_pin_set');
+        if (storedPin) {
+            setAppState('pin_entry');
+        } else {
+            setAppState('login');
+        }
+    }, []);
+
     // Initial load effect
     useEffect(() => {
         const initialize = async () => {
@@ -89,22 +105,23 @@ const AppContent: React.FC = () => {
                 console.warn("Google Client ID is not configured. Google Drive backup feature will be disabled.");
                 setIsDriveReady(false);
             }
-
-            const hasSeenLangScreen = localStorage.getItem('hasSeenLangScreen');
-            if (!hasSeenLangScreen) {
-                setAppState('language_selection');
-                return;
-            }
-
-            const storedPin = localStorage.getItem('user_pin_set');
-            if (storedPin) {
-                setAppState('pin_entry');
+            
+            // @ts-ignore
+            if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
+                // @ts-ignore
+                const hasKey = await window.aistudio.hasSelectedApiKey();
+                if (!hasKey) {
+                    setAppState('api_key_setup');
+                } else {
+                    proceedToNextStep();
+                }
             } else {
-                setAppState('login');
+                // Fallback if aistudio is not available, proceed but AI features will fail
+                proceedToNextStep();
             }
         };
         initialize();
-    }, []);
+    }, [proceedToNextStep]);
 
     const handlePinEntry = async (enteredPin: string) => {
         try {
@@ -262,6 +279,7 @@ const AppContent: React.FC = () => {
     const renderContent = () => {
         switch (appState) {
             case 'initializing': return <div className="flex min-h-screen items-center justify-center bg-rose-50"><p>Loading...</p></div>;
+            case 'api_key_setup': return <ApiKeySetupScreen onKeySelected={proceedToNextStep} />;
             case 'language_selection': return <LanguageSelectionScreen onLanguageSelected={() => { localStorage.setItem('hasSeenLangScreen', 'true'); setAppState('login'); }} />;
             case 'login': return <LoginScreen onGoogleLoginSuccess={() => setAppState('pin_setup')} />;
             

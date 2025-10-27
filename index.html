@@ -60,16 +60,18 @@
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
+    "@google/genai": "https://cdn.jsdelivr.net/npm/@google/genai/dist/index.mjs",
     "react-markdown": "https://aistudiocdn.com/react-markdown@^10.1.0",
     "@capacitor/cli": "https://aistudiocdn.com/@capacitor/cli@^7.4.4"
   }
 }
 </script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
     <script type="text/babel" data-type="module" src="./index.tsx"></script>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

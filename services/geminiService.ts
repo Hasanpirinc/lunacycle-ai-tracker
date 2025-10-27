@@ -1,13 +1,15 @@
 // Fix: Create the full implementation for the geminiService.
 import { GoogleGenAI, Modality, Type } from "@google/genai";
-import type { UserData, CycleInfo, PregnancyInfo } from '../types';
-import * as cache from '../utils/cache';
+import type { UserData, CycleInfo, PregnancyInfo } from '../types.ts';
+import * as cache from '../utils/cache.ts';
 
 const CACHE_PREFIX = 'api_cache_';
 
-// Initialize the Google Gemini AI client
-// The API key is automatically provided by the environment.
-const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+// Creates a new client instance for each API call to ensure the latest API key is used.
+const getClient = () => {
+    // The API key is assumed to be populated into process.env by the aistudio helper functions.
+    return new GoogleGenAI({apiKey: process.env.API_KEY});
+}
 
 /**
  * Fetches a personalized daily tip for a specific week of pregnancy.
@@ -18,6 +20,7 @@ export const getDailyPregnancyTip = async (week: number, language: string): Prom
     if (cachedTip) return cachedTip;
 
     try {
+        const ai = getClient();
         const prompt = `Provide a concise, helpful, and reassuring daily tip for someone who is ${week} weeks pregnant. The tip should be actionable and positive. Respond in the ${language} language. Keep the response under 50 words.`;
         
         const response = await ai.models.generateContent({
@@ -45,6 +48,7 @@ export const getDailyCycleTip = async (cycleInfo: CycleInfo, language: string): 
     if (cachedTip) return cachedTip;
 
     try {
+        const ai = getClient();
         const { currentPhase, isFertile, isPeriod } = cycleInfo;
         const prompt = `Provide a concise, helpful, and reassuring daily tip for someone in their menstrual cycle. They are currently in the ${currentPhase} phase. It is ${isPeriod ? 'their period' : 'not their period'}. It is ${isFertile ? 'their fertile window' : 'not their fertile window'}. The tip should be actionable and positive. Respond in the ${language} language. Keep the response under 50 words.`;
 
@@ -73,6 +77,7 @@ export const generateBabySizeImage = async (objectName: string, language: string
     if (cachedImage) return cachedImage;
 
     try {
+        const ai = getClient();
         const prompt = `Create a cute, minimalist, and visually appealing illustration of a single ${objectName}. The background should be a soft, solid pastel color. The style should be gentle and suitable for a pregnancy app. No text.`;
         
         const response = await ai.models.generateContent({
@@ -116,6 +121,7 @@ export const analyzeDay = async (
     if (cachedAnalysis) return cachedAnalysis;
 
     try {
+        const ai = getClient();
         const { currentPhase, isFertile, isPeriod } = cycleInfo;
         const symptomList = symptoms.length > 0 ? symptoms.join(', ') : 'no specific symptoms';
 
@@ -187,6 +193,7 @@ export const analyzePregnancyDay = async (
     if (cachedAnalysis) return cachedAnalysis;
 
     try {
+        const ai = getClient();
         const { currentWeek, trimester } = pregnancyInfo;
         const symptomList = symptoms.length > 0 ? symptoms.join(', ') : 'no specific symptoms';
 
@@ -246,6 +253,7 @@ export const analyzePregnancyDay = async (
 export const generateSpeech = async (text: string): Promise<string | null> => {
     // Speech is not cached as it's a direct user action and should be responsive.
     try {
+        const ai = getClient();
         if (!text) return null;
 
         const response = await ai.models.generateContent({
@@ -279,6 +287,7 @@ export const getPersonalizedResourceTopics = async (phase: string, symptoms: str
     if (cachedTopics) return cachedTopics;
 
     try {
+        const ai = getClient();
         const symptomList = symptoms.length > 0 ? `The user is experiencing: ${symptoms.join(', ')}.` : 'The user has not logged any specific symptoms.';
         const prompt = `
             Generate a list of 5 relevant and helpful article topics for a user of a cycle tracking app.
@@ -331,6 +340,7 @@ export const getPersonalizedPregnancyResourceTopics = async (pregnancyInfo: Preg
     if (cachedTopics) return cachedTopics;
 
     try {
+        const ai = getClient();
         const { currentWeek, trimester } = pregnancyInfo;
         const symptomList = symptoms.length > 0 ? `The user is experiencing: ${symptoms.join(', ')}.` : 'The user has not logged any specific symptoms.';
 
@@ -386,6 +396,7 @@ export const getExerciseRecommendations = async (phase: string, symptoms: string
     if (cachedExercises) return cachedExercises;
     
     try {
+        const ai = getClient();
         const symptomList = symptoms.length > 0 ? `The user is experiencing: ${symptoms.join(', ')}.` : 'The user has not logged any specific symptoms.';
         const prompt = `
             Generate a list of 2-3 safe and relevant exercise recommendations for a user of a cycle tracking app.
@@ -447,6 +458,7 @@ export const getPregnancyExerciseRecommendations = async (pregnancyInfo: Pregnan
     if (cachedExercises) return cachedExercises;
 
     try {
+        const ai = getClient();
         const { currentWeek, trimester } = pregnancyInfo;
         const symptomList = symptoms.length > 0 ? `The user is experiencing: ${symptoms.join(', ')}.` : 'The user has not logged any specific symptoms.';
 
@@ -510,6 +522,7 @@ export const getResourceContent = async (topic: string, language: string): Promi
     if (cachedContent) return cachedContent;
     
     try {
+        const ai = getClient();
         const prompt = `
             You are a helpful, knowledgeable, and friendly health writer for a women's health app.
             Write a short, informative article (2-3 paragraphs) on the following topic: "${topic}".
@@ -541,7 +554,7 @@ export const getChatbotResponse = async (
     context: { cycleInfo?: CycleInfo | null; pregnancyInfo?: PregnancyInfo | null; symptoms: string[] },
     language: string
 ): Promise<{ text: string; sources: { uri: string; title: string }[] }> => {
-
+    const ai = getClient();
     let contextString = `The user's name is ${userData.name}. `;
     if (userData.isPregnant && context.pregnancyInfo) {
         const { currentWeek, trimester } = context.pregnancyInfo;
