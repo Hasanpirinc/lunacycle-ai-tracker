@@ -1,0 +1,21 @@
+{
+  "short_name": "LunaCycle",
+  "name": "LunaCycle AI Tracker",
+  "description": "An intelligent menstrual and pregnancy tracker that provides personalized daily insights. Track your cycle, log symptoms, and get AI-powered analysis of your day. Switch to pregnancy mode for daily health tips for you and your baby.",
+  "icons": [
+    {
+      "src": "./icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "./icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#FFFBF7",
+  "background_color": "#FFFBF7"
+}
